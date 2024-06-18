@@ -1,12 +1,7 @@
 import { HttpService } from '@nestjs/axios';
-import {flatten, Injectable} from '@nestjs/common';
-import {config, flatMap, forkJoin, map, merge, mergeAll, mergeMap, pipe, tap} from "rxjs";
-import * as process from "process";
-import { createReadStream } from 'fs';
-import { join } from 'path';
-import {json, response} from "express";
+import {Injectable} from '@nestjs/common';
+import {forkJoin, map} from "rxjs";
 import { AxiosResponse } from 'axios';
-import {Pipeline} from "./models/pipeline";
 @Injectable()
 export class AppService {
   constructor(private readonly httpService: HttpService) {
@@ -39,7 +34,7 @@ export class AppService {
     }).pipe(
         map((axiosResponse: AxiosResponse) => {
           return axiosResponse.data._embedded.leads.map(lead => ({
-              id: lead.id, name: lead.name, price: lead.price, date: lead.created_at, pipeline: lead.pipeline_id, responsible: lead.responsible_user_id
+              id: lead.id, name: lead.name, price: lead.price, date: new Date(lead.created_at), pipelineId: lead.pipeline_id, statusId: lead.status_id, responsibleId: lead.responsible_user_id
           }));
         })
     )
